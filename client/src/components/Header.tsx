@@ -95,7 +95,7 @@ const Header = () => {
     };
     
   return (
-    <div className='header flex flex-col bg-amber-100 w-full rounded-2xl min-h-fit'>
+    <div className='header flex flex-col bg-amber-200 w-full rounded-2xl min-h-fit'>
       <div className="flex justify-between items-center px-4 md:px-10 py-5">
         <div className="flex items-center gap-4">
           {!isHomePage && (
@@ -121,7 +121,7 @@ const Header = () => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder='Search Movies'
-                  className='w-60 h-10 rounded-2xl border-2 border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 placeholder:px-2 text-amber-700 px-2 pr-8'
+                  className='w-60 h-10 rounded-2xl border-2 border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 placeholder:text-amber-900/60 text-amber-700 px-2 pr-8 bg-amber-100'
                 />
                 {searchQuery && (
                   <button
@@ -138,7 +138,7 @@ const Header = () => {
 
             {/* Search Results Dropdown */}
             {showResults && (searchResults.length > 0 || loading) && (
-              <div className='absolute mt-2 w-72 max-h-96 overflow-y-auto bg-white rounded-lg shadow-lg z-50'>
+              <div className='absolute mt-2 w-72 max-h-96 overflow-y-auto bg-amber-50 rounded-lg shadow-lg z-50'>
                 {loading ? (
                   <div className='p-4 text-center text-gray-500'>Loading...</div>
                 ) : (
@@ -167,10 +167,10 @@ const Header = () => {
           </div>
           <button
             onClick={() => navigate('/favorites')}
-            className="flex items-center gap-2 text-amber-900 hover:text-amber-700 transition-colors"
+            className="flex items-center gap-2  transition-colors"
             title="View favorites"
           >
-            <Heart className="w-6 h-6" />
+            <Heart className="w-6 h-6 text-amber-600 fill-amber-600 hover:fill-amber-700" />
           </button>
         </div>
 
@@ -195,19 +195,19 @@ const Header = () => {
         <div className="px-4 py-4 space-y-4">
           {/* Search Bar */}
           <div className='relative' ref={searchRef}>
-            <div className='flex items-center gap-2 bg-white rounded-2xl p-3 shadow-sm'>
+            <div className='flex items-center gap-2 bg-amber-200 rounded-2xl p-3 shadow-sm'>
               <Search className='text-amber-700 w-5 h-5' />
               <input
                 type='text'
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder='Search Movies'
-                className='w-full h-8 focus:outline-none text-amber-700 placeholder:text-amber-400'
+                className='w-full h-8 focus:outline-none text-amber-700 placeholder:text-amber-900/60 bg-amber-200'
               />
               {searchQuery && (
                 <button
                   onClick={clearSearch}
-                  className='text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-full transition-colors'
+                  className='text-amber-500 bg-amber-200 hover:text-gray-700 p-1 hover:bg-amber-100 rounded-full transition-colors'
                   title='Clear search'
                 >
                   <X size={16} />
