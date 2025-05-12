@@ -35,6 +35,8 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
     if (isMobile && !isOverlayVisible) {
       e.preventDefault();
       setIsOverlayVisible(true);
+    } else {
+      navigate(`/movie/${id}`);
     }
   };
 
@@ -126,10 +128,10 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
           ? isOverlayVisible ? 'opacity-100' : 'opacity-0'
           : 'opacity-0 group-hover:opacity-100'
         }`}
-      ></div>
+      />
 
       {/* Content Container */}
-      <div className={`absolute inset-0 p-4 flex flex-col
+      <div className={`absolute inset-0 p-4 flex flex-col justify-between
         transition-all duration-300
         ${isMobile
           ? isOverlayVisible ? 'opacity-100 transform-none' : 'opacity-0 translate-y-4'

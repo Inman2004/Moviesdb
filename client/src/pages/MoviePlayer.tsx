@@ -41,7 +41,7 @@ const MoviePlayer = () => {
         const details = await getMovieDetails(Number(id));
         const videos = await getMovieVideos(Number(id));
         
-        setMovieDetails(details);
+        setMovieDetails(() => details);
         
         // Find YouTube trailer
         const trailer = videos.find(
