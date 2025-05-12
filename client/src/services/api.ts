@@ -22,7 +22,14 @@ interface Genre {
     name: string;
 }
 
-const fetchMoviesWithDetails = async (movies: MovieResult[]) => {
+interface MovieResult {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string;
+}
+
+const fetchMoviesWithDetails = async (movies: MovieResult[]): Promise<Movie[]> => {
     return Promise.all(
         movies.map(async (movie) => {
             const details = await getMovieDetails(movie.id)
@@ -35,37 +42,37 @@ const fetchMoviesWithDetails = async (movies: MovieResult[]) => {
     )
 }
 
-export const getPopularMovies = async () => {
+export const getPopularMovies = async (): Promise<Movie[]> => {
     const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1`)
     const data = await response.json()
     return fetchMoviesWithDetails(data.results)
 }
 
-export const getTopRatedMovies = async () => {
+export const getTopRatedMovies = async (): Promise<Movie[]> => {
     const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`)
     const data = await response.json()
     return fetchMoviesWithDetails(data.results)
 }
 
-export const getNowPlayingMovies = async () => {
+export const getNowPlayingMovies = async (): Promise<Movie[]> => {
     const response = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1`)
     const data = await response.json()
     return fetchMoviesWithDetails(data.results)
 }
 
-export const getUpcomingMovies = async () => {
+export const getUpcomingMovies = async (): Promise<Movie[]> => {
     const response = await fetch(`${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1`)
     const data = await response.json()
     return fetchMoviesWithDetails(data.results)
 }
 
-export const searchMovies = async (query: string) => {
+export const searchMovies = async (query: string): Promise<Movie[]> => {
     const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=1`)
     const data = await response.json()
     return fetchMoviesWithDetails(data.results)
 }
 
-export const getMovieDetails = async (movieId: number) => {
+export const getMovieDetails = async (movieId: number): Promise<MovieDetails> => {
     const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=en-US`)
     return await response.json()
 }
