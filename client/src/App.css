@@ -1,0 +1,28 @@
+#root {
+  max-width: 1580px;
+  margin: 0 auto;
+  text-align: center;
+  background: linear-gradient(to right, #814b00, #fee685 90%);
+  min-height: 100vh;
+  transition: all ease 0.3s;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fee685;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #814b00;
+  border-radius: 5px;
+  border: 2px solid #fee685;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #663c00;
+}
