@@ -26,6 +26,7 @@ export interface MovieDetails {
   tagline: string;
   backdrop_path: string;
   vote_average: number;
+  vote_count: number;
   genres: Genre[];
 }
 
