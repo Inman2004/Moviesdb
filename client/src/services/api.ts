@@ -1,22 +1,25 @@
-const API_KEY = "34f6f8c93478241fd62b62fe77d58dad"
-const BASE_URL = "https://api.themoviedb.org/3"
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
 
-interface MovieResult {
-    id: number;
-    title: string;
-    release_date: string;
-    poster_path: string;
+interface Movie {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string;
+  vote_average: number;
+  genres: string[];
+}
+
+export interface MovieDetails extends Movie {
+  overview: string;
+  runtime: number;
+  tagline: string;
+  backdrop_path: string;
 }
 
 interface Genre {
     id: number;
     name: string;
-}
-
-interface MovieDetails {
-    id: number;
-    vote_average: number;
-    genres: Genre[];
 }
 
 const fetchMoviesWithDetails = async (movies: MovieResult[]) => {

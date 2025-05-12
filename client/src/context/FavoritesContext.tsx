@@ -12,45 +12,54 @@ interface Movie {
 interface FavoritesContextType {
   favorites: Movie[];
   addFavorite: (movie: Movie) => void;
-  removeFavorite: (movieId: number) => void;
-  isFavorite: (movieId: number) => boolean;
+  removeFavorite: (id: number) => void;
+  isFavorite: (id: number) => boolean;
+  toggleFavorite: (movie: Movie) => void;
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
-export function FavoritesProvider({ children }: { children: React.ReactNode }) {
+export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [favorites, setFavorites] = useState<Movie[]>(() => {
-    const savedFavorites = localStorage.getItem('movieFavorites');
-    return savedFavorites ? JSON.parse(savedFavorites) : [];
+    const saved = localStorage.getItem('favorites');
+    return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('movieFavorites', JSON.stringify(favorites));
+    localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
   const addFavorite = (movie: Movie) => {
     setFavorites(prev => [...prev, movie]);
   };
 
-  const removeFavorite = (movieId: number) => {
-    setFavorites(prev => prev.filter(m => m.id !== movieId));
+  const removeFavorite = (id: number) => {
+    setFavorites(prev => prev.filter(movie => movie.id !== id));
   };
 
-  const isFavorite = (movieId: number) => {
-    return favorites.some(movie => movie.id === movieId);
+  const isFavorite = (id: number) => {
+    return favorites.some(movie => movie.id === id);
+  };
+
+  const toggleFavorite = (movie: Movie) => {
+    if (isFavorite(movie.id)) {
+      removeFavorite(movie.id);
+    } else {
+      addFavorite(movie);
+    }
   };
 
   return (
-    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, isFavorite }}>
+    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, isFavorite, toggleFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );
-}
+};
 
-export function useFavorites() {
+export const useFavorites = () => {
   const context = useContext(FavoritesContext);
   if (context === undefined) {
     throw new Error('useFavorites must be used within a FavoritesProvider');
   }
   return context;
-} 
+}; 

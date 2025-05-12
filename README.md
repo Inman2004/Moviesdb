@@ -35,8 +35,8 @@ A modern, responsive React application for browsing movies, powered by TMDB API.
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/moviesdb.git
-cd moviesdb
+git clone https://github.com/Inman2004/Moviesdb.git
+cd Moviesdb
 ```
 
 2. Install dependencies
@@ -93,6 +93,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-Your Name - [@yourusername](https://twitter.com/yourusername)
+RV Immanuel - [@rvimman_](https://twitter.com/rvimman_)
 
-Project Link: [https://github.com/yourusername/moviesdb](https://github.com/yourusername/moviesdb) 
+Project Link: [https://github.com/Inman2004/Moviesdb](https://github.com/Inman2004/Moviesdb) 
