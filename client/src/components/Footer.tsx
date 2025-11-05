@@ -1,7 +1,11 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-const Footer = () => {
+interface FooterProps {
+  dominantColor?: string | null;
+}
+
+const Footer: React.FC<FooterProps> = ({ dominantColor }) => {
   const currentYear = new Date().getFullYear()
   const location = useLocation()
 
@@ -22,7 +26,17 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-amber-100 text-amber-900 py-8 mt-auto">
+    <footer
+      className={`py-8 mt-auto transition-all duration-500 ${
+        dominantColor ? 'text-white' : 'bg-amber-100 text-amber-900'
+      }`}
+      style={dominantColor ? {
+        backgroundColor: `rgba(${parseInt(dominantColor.slice(4, -1).split(',')[0])}, ${parseInt(dominantColor.slice(4, -1).split(',')[1])}, ${parseInt(dominantColor.slice(4, -1).split(',')[2])}, 0.1)`,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderTop: `1px solid rgba(${parseInt(dominantColor.slice(4, -1).split(',')[0])}, ${parseInt(dominantColor.slice(4, -1).split(',')[1])}, ${parseInt(dominantColor.slice(4, -1).split(',')[2])}, 0.2)`
+      } : {}}
+    >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About Section */}
@@ -39,19 +53,19 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="hover:text-amber-700 transition-colors">
+                <Link to="/" className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors`}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/favorites" className="hover:text-amber-700 transition-colors">
+                <Link to="/favorites" className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors`}>
                   Favorites
                 </Link>
               </li>
               <li>
                 <button 
                   onClick={() => scrollToSection('popular')}
-                  className="hover:text-amber-700 transition-colors w-full"
+                  className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors w-full text-left`}
                 >
                   Popular Movies
                 </button>
@@ -59,7 +73,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={() => scrollToSection('top-rated')}
-                  className="hover:text-amber-700 transition-colors w-full"
+                  className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors w-full text-left`}
                 >
                   Top Rated Movies
                 </button>
@@ -67,7 +81,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={() => scrollToSection('now-playing')}
-                  className="hover:text-amber-700 transition-colors w-full"
+                  className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors w-full text-left`}
                 >
                   Now Playing
                 </button>
@@ -75,7 +89,7 @@ const Footer = () => {
               <li>
                 <button 
                   onClick={() => scrollToSection('upcoming')}
-                  className="hover:text-amber-700 transition-colors w-full"
+                  className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors w-full text-left`}
                 >
                   Upcoming Releases
                 </button>
@@ -88,17 +102,17 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/privacy" className="hover:text-amber-700 transition-colors">
+                <Link to="/privacy" className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors`}>
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="hover:text-amber-700 transition-colors">
+                <Link to="/terms" className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors`}>
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/cookie-policy" className="hover:text-amber-700 transition-colors">
+                <Link to="/cookie-policy" className={`${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'} transition-colors`}>
                   Cookie Policy
                 </Link>
               </li>
@@ -154,7 +168,12 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-amber-200">
+        <div
+          className="mt-8 pt-8 border-t"
+          style={dominantColor ? {
+            borderColor: `rgba(${parseInt(dominantColor.slice(4, -1).split(',')[0])}, ${parseInt(dominantColor.slice(4, -1).split(',')[1])}, ${parseInt(dominantColor.slice(4, -1).split(',')[2])}, 0.2)`
+          } : {}}
+        >
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm">
               © {currentYear} MoviesDB. All rights reserved.
@@ -165,7 +184,7 @@ const Footer = () => {
                 href="https://www.themoviedb.org/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium hover:text-amber-700 transition-colors"
+                className={`font-medium transition-colors ${dominantColor ? 'hover:text-gray-300' : 'hover:text-amber-700'}`}
               >
                 TMDB
               </a>

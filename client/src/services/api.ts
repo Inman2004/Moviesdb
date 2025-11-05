@@ -88,3 +88,9 @@ export const getMovieVideos = async (movieId: number) => {
   const data = await response.json();
   return data.results;
 };
+
+export const getMovieRecommendations = async (movieId: number): Promise<Movie[]> => {
+  const response = await fetch(`${BASE_URL}/movie/${movieId}/recommendations?api_key=${API_KEY}&language=en-US&page=1`);
+  const data = await response.json();
+  return fetchMoviesWithDetails(data.results);
+};

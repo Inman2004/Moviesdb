@@ -25,7 +25,11 @@ const debounce = <F extends (query: string) => Promise<void>>(
   };
 };
 
-const Header = () => {
+interface HeaderProps {
+  dominantColor?: string | null;
+}
+
+const Header: React.FC<HeaderProps> = ({ dominantColor }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
@@ -95,33 +99,54 @@ const Header = () => {
     };
     
   return (
-    <div className='header flex flex-col bg-amber-200 w-full rounded-2xl min-h-fit'>
+    <div
+      className={`header flex flex-col w-full rounded-2xl min-h-fit transition-all duration-500 ${
+        dominantColor ? 'glassmorphism' : 'bg-amber-200'
+      }`}
+      style={dominantColor ? {
+        backgroundColor: `rgba(${parseInt(dominantColor.slice(4, -1).split(',')[0])}, ${parseInt(dominantColor.slice(4, -1).split(',')[1])}, ${parseInt(dominantColor.slice(4, -1).split(',')[2])}, 0.1)`,
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: `1px solid rgba(${parseInt(dominantColor.slice(4, -1).split(',')[0])}, ${parseInt(dominantColor.slice(4, -1).split(',')[1])}, ${parseInt(dominantColor.slice(4, -1).split(',')[2])}, 0.2)`
+      } : {}}
+    >
       <div className="flex justify-between items-center px-4 md:px-10 py-5">
         <div className="flex items-center gap-4">
           {!isHomePage && (
             <button
               onClick={() => navigate(-1)}
-              className="text-amber-900 hover:text-amber-700 transition-colors"
+              className={`${dominantColor ? 'text-white' : 'text-amber-900'} hover:text-amber-700 transition-colors`}
               title="Go back"
             >
               <ArrowLeft className="w-6 h-6" />
             </button>
           )}
-          <h1 className='text-2xl md:text-4xl font-bold text-amber-900 cursor-pointer' onClick={() => navigate('/')}>MoviesDB</h1>
+          <h1
+            className={`text-2xl md:text-4xl font-bold cursor-pointer transition-colors ${
+              dominantColor ? 'text-white' : 'text-amber-900'
+            }`}
+            onClick={() => navigate('/')}
+          >
+            MoviesDB
+          </h1>
         </div>
 
         {/* Desktop Navigation */}
         <div className='hidden md:flex items-center gap-6'>
           <div className='relative' ref={searchRef}>
             <div className='flex items-center gap-2'>
-              <Search className='text-amber-700' />
+              <Search className={dominantColor ? 'text-white' : 'text-amber-700'} />
               <div className='relative'>
                 <input
                   type='text'
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder='Search Movies'
-                  className='w-60 h-10 rounded-2xl border-2 border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50 placeholder:text-amber-900/60 text-amber-700 px-2 pr-8 bg-amber-100'
+                  className={`w-60 h-10 rounded-2xl border-2 focus:outline-none focus:ring-2 focus:ring-opacity-50 px-2 pr-8 transition-colors ${
+                    dominantColor
+                      ? 'bg-transparent border-white/20 text-white placeholder:text-white/60 focus:ring-white'
+                      : 'bg-amber-100 border-amber-300 text-amber-700 placeholder:text-amber-900/60 focus:ring-amber-500'
+                  }`}
                 />
                 {searchQuery && (
                   <button
@@ -170,14 +195,24 @@ const Header = () => {
             className="flex items-center gap-2  transition-colors"
             title="View favorites"
           >
-            <Heart className="w-6 h-6 text-amber-600 fill-amber-600 hover:fill-amber-700" />
+            <Heart
+              className={`w-6 h-6 transition-colors ${
+                dominantColor
+                  ? 'text-white fill-white hover:fill-gray-200'
+                  : 'text-amber-600 fill-amber-600 hover:fill-amber-700'
+              }`}
+            />
           </button>
         </div>
 
         {/* Mobile Menu Button */}
         <button
           onClick={() => setShowMobileMenu(!showMobileMenu)}
-          className="md:hidden text-amber-900 hover:text-amber-700 transition-colors p-2 rounded-lg hover:bg-amber-200"
+          className={`md:hidden transition-colors p-2 rounded-lg ${
+            dominantColor
+              ? 'text-white hover:bg-white/10'
+              : 'text-amber-900 hover:text-amber-700 hover:bg-amber-200'
+          }`}
           aria-label="Toggle mobile menu"
           title="Toggle menu"
         >

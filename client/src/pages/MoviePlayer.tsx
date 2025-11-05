@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import ColorThief from 'colorthief'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ReactPlayer from 'react-player/lazy'
@@ -30,6 +31,7 @@ const MoviePlayer = () => {
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [trailer, setTrailer] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dominantColor, setDominantColor] = useState<string | null>(null);
   const { favorites, toggleFavorite } = useFavorites();
 
   useEffect(() => {
@@ -62,6 +64,21 @@ const MoviePlayer = () => {
 
     fetchMovieData();
   }, [id]);
+
+  useEffect(() => {
+    if (movieDetails?.poster_path) {
+      const colorThief = new ColorThief();
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`;
+
+      img.onload = () => {
+        const color = colorThief.getColor(img);
+        const dominantColor = `rgb(${color.join(',')})`;
+        setDominantColor(dominantColor);
+      };
+    }
+  }, [movieDetails]);
 
   const handleFavoriteClick = () => {
     if (movieDetails) {
@@ -108,8 +125,13 @@ const MoviePlayer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black to-amber-500 flex flex-col">
-      <Header />
+    <div
+      className="min-h-screen flex flex-col transition-colors duration-500"
+      style={{
+        background: `linear-gradient(to bottom, black 20%, ${dominantColor || '#1a1a1a'} 100%)`
+      }}
+    >
+      <Header dominantColor={dominantColor} />
       <div className="container mx-auto px-4 py-8 flex-grow animate-fade-in">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left Column - Video Player */}
@@ -205,7 +227,7 @@ const MoviePlayer = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      <Footer dominantColor={dominantColor} />
     </div>
   );
 }
