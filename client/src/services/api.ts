@@ -7,6 +7,7 @@ interface MovieResult {
   title: string;
   release_date: string;
   poster_path: string;
+  backdrop_path: string;
 }
 
 // Extended movie interface with additional details

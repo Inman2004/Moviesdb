@@ -11,6 +11,7 @@ interface Movie {
   title: string;
   release_date: string;
   poster_path: string;
+  backdrop_path: string;
   vote_average: number;
   genres: string[];
 }
@@ -48,12 +49,13 @@ export default function Home() {
       } catch (error) {
         console.error('Error fetching movies:', error);
       } finally {
-        setLoading({
+        setLoading(prev => ({
+          ...prev,
           popular: false,
           topRated: false,
           nowPlaying: false,
           upcoming: false
-        });
+        }));
       }
     };
 
