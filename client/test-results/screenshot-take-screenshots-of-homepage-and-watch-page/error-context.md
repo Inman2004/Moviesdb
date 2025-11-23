@@ -1,0 +1,121 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - button "Go back" [ref=e7] [cursor=pointer]:
+        - img [ref=e8]
+      - heading "MoviesDB" [level=1] [ref=e10] [cursor=pointer]
+    - generic [ref=e11]:
+      - generic [ref=e13]:
+        - img [ref=e14]
+        - textbox "Search Movies" [ref=e18]
+      - button "View favorites" [ref=e19] [cursor=pointer]:
+        - img [ref=e20]
+  - generic [ref=e23]:
+    - iframe [ref=e29]:
+      - generic "YouTube Video Player" [ref=f1e3]:
+        - generic [ref=f1e5]:
+          - link "Photo image of Trinity CineAsia" [ref=f1e7] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UC44XYUbs44hy9SAS0H1OL1w?embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&embeds_referring_origin=http%3A%2F%2Flocalhost%3A3000
+          - link "THE SHADOW'S EDGE | Action Highlights | 3 Oct In UK and Irish cinemas" [ref=f1e10] [cursor=pointer]:
+            - /url: https://www.youtube.com/watch?v=gREBnHgRRCs
+          - button "Share" [ref=f1e12] [cursor=pointer]:
+            - generic [ref=f1e13]:
+              - img
+            - generic [ref=f1e14]: Share
+        - button "Play" [ref=f1e17] [cursor=pointer]:
+          - img
+        - link "Watch on YouTube" [ref=f1e18] [cursor=pointer]:
+          - /url: https://www.youtube.com/watch?v=gREBnHgRRCs&embeds_referring_euri=http%3A%2F%2Flocalhost%3A3000%2F&embeds_referring_origin=http%3A%2F%2Flocalhost%3A3000
+          - generic [ref=f1e19]: Watch on
+          - generic [ref=f1e20]:
+            - img
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - heading "The Shadow's Edge" [level=1] [ref=e32]
+        - button "Add to favorites" [ref=e33] [cursor=pointer]:
+          - img [ref=e34]
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - img [ref=e38]
+          - generic [ref=e40]: "2025"
+        - generic [ref=e41]:
+          - img [ref=e42]
+          - generic [ref=e45]: 142 min
+        - generic [ref=e46]:
+          - img [ref=e47]
+          - generic [ref=e49]: 6.3/10
+        - generic [ref=e50]:
+          - img [ref=e51]
+          - generic [ref=e56]: 89 votes
+      - generic [ref=e57]:
+        - generic [ref=e58]: Action
+        - generic [ref=e59]: Crime
+        - generic [ref=e60]: Thriller
+      - generic [ref=e61]:
+        - heading "Overview" [level=2] [ref=e62]:
+          - img [ref=e63]
+          - text: Overview
+        - paragraph [ref=e66]: Macau Police brings the tracking expert police officer out of retirement to help catch a dangerous group of professional thieves.
+  - contentinfo [ref=e67]:
+    - generic [ref=e68]:
+      - generic [ref=e69]:
+        - generic [ref=e70]:
+          - heading "MoviesDB" [level=3] [ref=e71]
+          - paragraph [ref=e72]: Your ultimate destination for movies information, ratings, and reviews. Discover the latest releases and timeless classics.
+        - generic [ref=e73]:
+          - heading "Quick Links" [level=3] [ref=e74]
+          - list [ref=e75]:
+            - listitem [ref=e76]:
+              - link "Home" [ref=e77] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e78]:
+              - link "Favorites" [ref=e79] [cursor=pointer]:
+                - /url: /favorites
+            - listitem [ref=e80]:
+              - button "Popular Movies" [ref=e81] [cursor=pointer]
+            - listitem [ref=e82]:
+              - button "Top Rated Movies" [ref=e83] [cursor=pointer]
+            - listitem [ref=e84]:
+              - button "Now Playing" [ref=e85] [cursor=pointer]
+            - listitem [ref=e86]:
+              - button "Upcoming Releases" [ref=e87] [cursor=pointer]
+        - generic [ref=e88]:
+          - heading "Legal" [level=3] [ref=e89]
+          - list [ref=e90]:
+            - listitem [ref=e91]:
+              - link "Privacy Policy" [ref=e92] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e93]:
+              - link "Terms of Service" [ref=e94] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e95]:
+              - link "Cookie Policy" [ref=e96] [cursor=pointer]:
+                - /url: /cookie-policy
+        - generic [ref=e97]:
+          - heading "Connect With Me" [level=3] [ref=e98]
+          - generic [ref=e99]:
+            - link "facebook-new" [ref=e100] [cursor=pointer]:
+              - /url: https://www.facebook.com/rv.imman.7
+              - img "facebook-new" [ref=e101]
+            - link "twitterx--v2" [ref=e102] [cursor=pointer]:
+              - /url: https://x.com/rvimman_
+              - img "twitterx--v2" [ref=e103]
+            - link "instagram-new--v1" [ref=e104] [cursor=pointer]:
+              - /url: https://www.instagram.com/rv_imman
+              - img "instagram-new--v1" [ref=e105]
+            - link "linkedin" [ref=e106] [cursor=pointer]:
+              - /url: https://www.linkedin.com/in/rv3d
+              - img "linkedin" [ref=e107]
+            - link "github" [ref=e108] [cursor=pointer]:
+              - /url: https://github.com/Inman2004
+              - img "github" [ref=e109]
+      - generic [ref=e111]:
+        - paragraph [ref=e112]: © 2025 MoviesDB. All rights reserved.
+        - paragraph [ref=e113]:
+          - text: Powered by
+          - link "TMDB" [ref=e114] [cursor=pointer]:
+            - /url: https://www.themoviedb.org/
+```
