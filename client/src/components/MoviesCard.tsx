@@ -1,8 +1,9 @@
-import { Heart, X, Star, Bookmark } from 'lucide-react'
+import { Heart, X, Star, Bookmark, Eye } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext';
 import { useWatchlist } from '../context/WatchlistContext';
+import { useWatched } from '../context/WatchedContext';
 import toast from 'react-hot-toast';
 import { useTheme } from '../context/ThemeContext';
 
@@ -19,8 +20,10 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
   const navigate = useNavigate();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const { inWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
+  const { isWatched, toggleWatched } = useWatched();
   const isMovieFavorite = isFavorite(id);
   const isMovieInWatchlist = inWatchlist(id);
+  const isMovieWatched = isWatched(id);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const { themeClasses } = useTheme();
@@ -143,6 +146,49 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
     });
   };
 
+  const handleWatchedClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleWatched({ id, title, year, url, rating, genres });
+
+    toast.custom((t) => (
+      <div className={`${
+        t.visible ? 'animate-enter' : 'animate-leave'
+      } max-w-md bg-gradient-to-r from-green-50 to-green-100 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+        <div className="flex-1 p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <img
+                className="h-16 w-12 rounded-md object-cover shadow-sm"
+                src={url}
+                alt={title}
+              />
+            </div>
+            <div className="ml-4 flex-1">
+              <p className="text-sm font-medium text-green-900">
+                {title}
+              </p>
+              <p className="mt-1 text-sm text-green-700">
+                {isMovieWatched ? 'Removed from history' : 'Marked as watched'}
+              </p>
+            </div>
+            <div className="ml-4 flex-shrink-0 flex items-center">
+              <Eye className={`w-6 h-6 ${isMovieWatched ? 'text-gray-400' : 'text-green-600'}`} />
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          className="flex border border-transparent rounded-none rounded-r-lg p-4 items-center justify-center text-sm font-medium text-green-600 hover:text-green-500 focus:outline-none"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+    ), {
+      duration: 3000,
+      position: 'bottom-right',
+    });
+  };
+
   // Close overlay when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -240,40 +286,48 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
               navigate(`/movie/${id}`);
             }}
           >
-            Watch
+            Info
           </button>
-          <button 
+          <button
             className={`fav-btn p-2 rounded-full transition-all duration-300 shadow-lg
-              ${isMovieInWatchlist
-                ? 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700'
+              ${isMovieWatched
+                ? 'bg-green-500 hover:bg-green-600 active:bg-green-700'
                 : 'bg-white hover:bg-gray-100 active:bg-gray-200'}
-              focus:outline-none focus:ring-2 focus:ring-offset-2
-              ${isMovieInWatchlist ? 'focus:ring-blue-500' : 'focus:ring-gray-500'}`}
-            onClick={handleWatchlistClick}
-            aria-label={isMovieInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
+              focus:outline-none focus:ring-2 focus:ring-offset-2`}
+            onClick={handleWatchedClick}
+            title={isMovieWatched ? 'Mark as unwatched' : 'Mark as watched'}
           >
-            <Bookmark
+            <Eye
               className={`w-5 h-5 transition-colors duration-300
-                ${isMovieInWatchlist
-                  ? 'text-white fill-current'
-                  : 'text-blue-500'}`}
+                ${isMovieWatched ? 'text-white' : 'text-green-600'}`}
             />
           </button>
           <button
             className={`fav-btn p-2 rounded-full transition-all duration-300 shadow-lg
+              ${isMovieInWatchlist
+                ? 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700'
+                : 'bg-white hover:bg-gray-100 active:bg-gray-200'}
+              focus:outline-none focus:ring-2 focus:ring-offset-2`}
+            onClick={handleWatchlistClick}
+            title={isMovieInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
+          >
+            <Bookmark
+              className={`w-5 h-5 transition-colors duration-300
+                ${isMovieInWatchlist ? 'text-white fill-current' : 'text-blue-500'}`}
+            />
+          </button>
+          <button 
+            className={`fav-btn p-2 rounded-full transition-all duration-300 shadow-lg
               ${isMovieFavorite 
                 ? 'bg-red-500 hover:bg-red-600 active:bg-red-700' 
                 : 'bg-white hover:bg-gray-100 active:bg-gray-200'}
-              focus:outline-none focus:ring-2 focus:ring-offset-2 
-              ${isMovieFavorite ? 'focus:ring-red-500' : 'focus:ring-gray-500'}`} 
+              focus:outline-none focus:ring-2 focus:ring-offset-2`}
             onClick={handleFavoriteClick}
-            aria-label={isMovieFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            title={isMovieFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
             <Heart 
               className={`w-5 h-5 transition-colors duration-300 
-                ${isMovieFavorite 
-                  ? 'text-white fill-current' 
-                  : 'text-red-500'}`}
+                ${isMovieFavorite ? 'text-white fill-current' : 'text-red-500'}`}
             />
           </button>
         </div>

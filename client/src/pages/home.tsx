@@ -3,10 +3,10 @@ import Header from '../components/Header';
 import Slider from '../components/Slider';
 import MovieSection from '../components/MovieSection';
 import Footer from '../components/Footer';
-import { getPopularMovies, getTopRatedMovies, getNowPlayingMovies, getUpcomingMovies, getMovieRecommendations, getMovieGenres, discoverMovies } from '../services/api';
+import { getPopularMovies, getTopRatedMovies, getNowPlayingMovies, getUpcomingMovies, getMovieRecommendations, getMovieGenres, discoverMovies, getTrendingMovies } from '../services/api';
 import { useFavorites } from '../context/FavoritesContext';
 import { useWatchlist } from '../context/WatchlistContext';
-import { Filter } from 'lucide-react';
+import { Filter, TrendingUp } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 interface Movie {
@@ -23,18 +23,21 @@ export default function Home() {
   const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
   const [nowPlayingMovies, setNowPlayingMovies] = useState<Movie[]>([]);
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]);
+  const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]);
   const [recommendedMovies, setRecommendedMovies] = useState<Movie[]>([]);
   const [discoveredMovies, setDiscoveredMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<{id: number, name: string}[]>([]);
 
   const [selectedGenre, setSelectedGenre] = useState<number | undefined>();
   const [sortBy, setSortBy] = useState<string>('popularity.desc');
+  const [trendingWindow, setTrendingWindow] = useState<'day' | 'week'>('day');
 
   const [loading, setLoading] = useState({
     popular: true,
     topRated: true,
     nowPlaying: true,
     upcoming: true,
+    trending: true,
     recommended: false,
     discover: false,
   });
@@ -44,6 +47,7 @@ export default function Home() {
     topRated: 1,
     nowPlaying: 1,
     upcoming: 1,
+    trending: 1,
     discover: 1
   });
 
@@ -52,6 +56,7 @@ export default function Home() {
     topRated: false,
     nowPlaying: false,
     upcoming: false,
+    trending: false,
     discover: false
   });
 
@@ -95,17 +100,19 @@ export default function Home() {
     const fetchAllMovies = async () => {
       try {
         // Fetch all categories in parallel
-        const [popular, topRated, nowPlaying, upcoming] = await Promise.all([
+        const [popular, topRated, nowPlaying, upcoming, trending] = await Promise.all([
           getPopularMovies(1),
           getTopRatedMovies(1),
           getNowPlayingMovies(1),
-          getUpcomingMovies(1)
+          getUpcomingMovies(1),
+          getTrendingMovies(trendingWindow, 1)
         ]);
 
         setPopularMovies(popular);
         setTopRatedMovies(topRated);
         setNowPlayingMovies(nowPlaying);
         setUpcomingMovies(upcoming);
+        setTrendingMovies(trending);
       } catch (error) {
         console.error('Error fetching movies:', error);
       } finally {
@@ -114,13 +121,33 @@ export default function Home() {
           popular: false,
           topRated: false,
           nowPlaying: false,
-          upcoming: false
+          upcoming: false,
+          trending: false
         }));
       }
     };
 
     fetchAllMovies();
   }, []);
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        setLoading(prev => ({ ...prev, trending: true }));
+        setPages(prev => ({ ...prev, trending: 1 }));
+        const movies = await getTrendingMovies(trendingWindow, 1);
+        setTrendingMovies(movies);
+      } catch (error) {
+        console.error("Error fetching trending movies", error);
+      } finally {
+        setLoading(prev => ({ ...prev, trending: false }));
+      }
+    };
+    // skip the initial fetch as it's handled by fetchAllMovies
+    if (!loading.popular) {
+        fetchTrending();
+    }
+  }, [trendingWindow]);
 
   const loadMore = async (category: keyof typeof pages) => {
     try {
@@ -144,6 +171,10 @@ export default function Home() {
         case 'upcoming':
           newMovies = await getUpcomingMovies(nextPage);
           setUpcomingMovies(prev => [...prev, ...newMovies]);
+          break;
+        case 'trending':
+          newMovies = await getTrendingMovies(trendingWindow, nextPage);
+          setTrendingMovies(prev => [...prev, ...newMovies]);
           break;
         case 'discover':
           newMovies = await discoverMovies(selectedGenre, sortBy, nextPage);
@@ -237,6 +268,37 @@ export default function Home() {
           />
         ) : (
           <>
+            {/* Trending Section with Toggle */}
+            <div className="mb-12">
+              <div className="flex items-center justify-between mb-2">
+                 <div className="flex items-center gap-3">
+                   <TrendingUp className={`w-8 h-8 ${themeClasses.textPrimary}`} />
+                   <h2 className={`text-2xl md:text-3xl font-bold ${themeClasses.textPrimary}`}>Trending</h2>
+                 </div>
+                 <div className={`flex bg-black/40 rounded-full p-1 border ${themeClasses.border}/30`}>
+                   <button
+                     onClick={() => setTrendingWindow('day')}
+                     className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${trendingWindow === 'day' ? `${themeClasses.accent} text-white` : `${themeClasses.textSecondary} hover:text-white`}`}
+                   >
+                     Today
+                   </button>
+                   <button
+                     onClick={() => setTrendingWindow('week')}
+                     className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${trendingWindow === 'week' ? `${themeClasses.accent} text-white` : `${themeClasses.textSecondary} hover:text-white`}`}
+                   >
+                     This Week
+                   </button>
+                 </div>
+              </div>
+              <MovieSection
+                title=""
+                movies={trendingMovies}
+                loading={loading.trending}
+                onLoadMore={() => loadMore('trending')}
+                loadingMore={loadingMore.trending}
+              />
+            </div>
+
             {recommendedMovies.length > 0 && (
               <MovieSection
                 title="Recommended For You"

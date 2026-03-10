@@ -1,38 +1,12 @@
-import { Search, X, ArrowLeft, Heart, Menu, Bookmark, Palette } from 'lucide-react';
+import { Search, X, ArrowLeft, Heart, Menu, Bookmark, Palette, Eye, User, Library } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { searchMovies } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
-
-interface Movie {
-  id: number;
-  title: string;
-  release_date: string;
-  poster_path: string;
-}
-
-// Custom debounce function
-const debounce = <F extends (query: string) => Promise<void>>(
-  func: F,
-  waitFor: number
-) => {
-  let timeout: ReturnType<typeof setTimeout> | null = null;
-
-  return (query: string): void => {
-    if (timeout !== null) {
-      clearTimeout(timeout);
-    }
-    timeout = setTimeout(() => func(query), waitFor);
-  };
-};
 
 const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<Movie[]>([]);
-    const [showResults, setShowResults] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -56,43 +30,40 @@ const Header = () => {
       setShowMobileMenu(false);
     }, [location.pathname]);
 
-    // Debounced search function
-    const debouncedSearch = debounce(async (query: string) => {
-      if (!query.trim()) {
-        setSearchResults([]);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const results = await searchMovies(query);
-        setSearchResults(results);
-      } catch (error) {
-        console.error('Error searching movies:', error);
-        setSearchResults([]);
-      } finally {
-        setLoading(false);
-      }
-    }, 500);
-
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const query = e.target.value;
-      setSearchQuery(query);
-      setShowResults(true);
-      setLoading(true);
-      debouncedSearch(query);
+      setSearchQuery(e.target.value);
     };
 
-    const handleMovieClick = (movieId: number) => {
-      setShowResults(false);
-      setSearchQuery('');
-      navigate(`/movie/${movieId}`);
+    const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter' && searchQuery.trim()) {
+        navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+        setShowMobileMenu(false);
+      }
     };
+
+    // Global keyboard shortcuts
+    useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        // Press '/' to focus search
+        if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          const searchInput = document.getElementById('global-search-input');
+          if (searchInput) {
+            searchInput.focus();
+          }
+        }
+        // Press 'Escape' to close mobile menu
+        if (e.key === 'Escape' && showMobileMenu) {
+          setShowMobileMenu(false);
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [showMobileMenu]);
 
     const clearSearch = () => {
       setSearchQuery('');
-      setSearchResults([]);
-      setShowResults(false);
     };
     
     const { setTheme, themeClasses } = useTheme();
@@ -120,10 +91,12 @@ const Header = () => {
               <Search className={`${themeClasses.textSecondary}`} />
               <div className='relative'>
                 <input
+                  id="global-search-input"
                   type='text'
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  placeholder='Search Movies'
+                  onKeyDown={handleSearchSubmit}
+                  placeholder='Search Movies (Press /)'
                   className={`w-60 h-10 rounded-2xl border-2 ${themeClasses.border} focus:outline-none focus:ring-2 focus:ring-${themeClasses.accent.split('-')[1]}-500 focus:ring-opacity-50 placeholder:${themeClasses.textPrimary}/60 ${themeClasses.textSecondary} px-2 pr-8 bg-white/50`}
                 />
                 {searchQuery && (
@@ -138,35 +111,6 @@ const Header = () => {
                 )}
               </div>
             </div>
-
-            {/* Search Results Dropdown */}
-            {showResults && (searchResults.length > 0 || loading) && (
-              <div className='absolute mt-2 w-72 max-h-96 overflow-y-auto bg-white rounded-lg shadow-lg z-50'>
-                {loading ? (
-                  <div className='p-4 text-center text-gray-500'>Loading...</div>
-                ) : (
-                  searchResults.map((movie) => (
-                    <div
-                      key={movie.id}
-                      className='flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer'
-                      onClick={() => handleMovieClick(movie.id)}
-                    >
-                      <img
-                        src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : '/no-poster.png'}
-                        alt={movie.title}
-                        className='w-10 h-14 object-cover rounded'
-                      />
-                      <div>
-                        <p className='font-medium text-gray-800'>{movie.title}</p>
-                        <p className='text-sm text-gray-500'>
-                          {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
           </div>
           <div className="relative group">
             <button className={`flex items-center gap-2 transition-colors mr-4 ${themeClasses.textSecondary} hover:${themeClasses.textPrimary}`}>
@@ -179,6 +123,27 @@ const Header = () => {
             </div>
           </div>
 
+          <button
+            onClick={() => navigate('/profile')}
+            className="flex items-center gap-2 transition-colors mr-4"
+            title="View profile stats"
+          >
+            <User className={`w-6 h-6 ${themeClasses.textSecondary} hover:opacity-80`} />
+          </button>
+          <button
+            onClick={() => navigate('/collections')}
+            className="flex items-center gap-2 transition-colors mr-4"
+            title="View collections"
+          >
+            <Library className={`w-6 h-6 ${themeClasses.textSecondary} hover:opacity-80`} />
+          </button>
+          <button
+            onClick={() => navigate('/history')}
+            className="flex items-center gap-2 transition-colors mr-4"
+            title="View history"
+          >
+            <Eye className={`w-6 h-6 ${themeClasses.textSecondary} hover:opacity-80`} />
+          </button>
           <button
             onClick={() => navigate('/watchlist')}
             className="flex items-center gap-2 transition-colors mr-4"
@@ -222,7 +187,8 @@ const Header = () => {
                 type='text'
                 value={searchQuery}
                 onChange={handleSearchChange}
-                placeholder='Search Movies'
+                onKeyDown={handleSearchSubmit}
+                placeholder='Search Movies (Press Enter)'
                 className={`w-full h-8 focus:outline-none ${themeClasses.textPrimary} placeholder:${themeClasses.textPrimary}/60 bg-transparent`}
               />
               {searchQuery && (
@@ -235,44 +201,6 @@ const Header = () => {
                 </button>
               )}
             </div>
-
-            {/* Mobile Search Results with Smooth Animation */}
-            <div className={`absolute left-0 right-0 mt-2 transition-all duration-300 ${
-              showResults && (searchResults.length > 0 || loading)
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 -translate-y-4 pointer-events-none'
-            }`}>
-              <div className='bg-white rounded-lg shadow-lg overflow-hidden'>
-                {loading ? (
-                  <div className='p-4 text-center text-gray-500'>
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-amber-500 mx-auto"></div>
-                  </div>
-                ) : (
-                  searchResults.map((movie) => (
-                    <div
-                      key={movie.id}
-                      className='flex items-center gap-3 p-3 hover:bg-amber-50 cursor-pointer active:bg-amber-100 transition-colors'
-                      onClick={() => {
-                        handleMovieClick(movie.id);
-                        setShowMobileMenu(false);
-                      }}
-                    >
-                      <img
-                        src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : '/no-poster.png'}
-                        alt={movie.title}
-                        className='w-12 h-16 object-cover rounded shadow-sm'
-                      />
-                      <div>
-                        <p className='font-medium text-gray-800 line-clamp-2'>{movie.title}</p>
-                        <p className='text-sm text-gray-500'>
-                          {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
           </div>
 
           {/* Theme Selector */}
@@ -281,6 +209,42 @@ const Header = () => {
             <button onClick={() => { setTheme('blue'); setShowMobileMenu(false); }} className="w-8 h-8 rounded-full bg-blue-500 border-2 border-white"></button>
             <button onClick={() => { setTheme('purple'); setShowMobileMenu(false); }} className="w-8 h-8 rounded-full bg-purple-500 border-2 border-white"></button>
           </div>
+
+          {/* Profile Button */}
+          <button
+            onClick={() => {
+              navigate('/profile');
+              setShowMobileMenu(false);
+            }}
+            className={`flex items-center gap-3 w-full p-3 ${themeClasses.textPrimary} hover:bg-white/30 rounded-2xl transition-colors`}
+          >
+            <User className="w-6 h-6" />
+            <span className="font-medium">Profile Stats</span>
+          </button>
+
+          {/* Collections Button */}
+          <button
+            onClick={() => {
+              navigate('/collections');
+              setShowMobileMenu(false);
+            }}
+            className={`flex items-center gap-3 w-full p-3 ${themeClasses.textPrimary} hover:bg-white/30 rounded-2xl transition-colors`}
+          >
+            <Library className="w-6 h-6" />
+            <span className="font-medium">Collections</span>
+          </button>
+
+          {/* History Button */}
+          <button
+            onClick={() => {
+              navigate('/history');
+              setShowMobileMenu(false);
+            }}
+            className={`flex items-center gap-3 w-full p-3 ${themeClasses.textPrimary} hover:bg-white/30 rounded-2xl transition-colors`}
+          >
+            <Eye className="w-6 h-6" />
+            <span className="font-medium">History</span>
+          </button>
 
           {/* Watchlist Button */}
           <button

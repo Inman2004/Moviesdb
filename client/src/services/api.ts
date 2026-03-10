@@ -54,6 +54,12 @@ export const getPopularMovies = async (page: number = 1): Promise<Movie[]> => {
   return fetchMoviesWithDetails(data.results);
 };
 
+export const getTrendingMovies = async (timeWindow: 'day' | 'week' = 'day', page: number = 1): Promise<Movie[]> => {
+  const response = await fetch(`${BASE_URL}/trending/movie/${timeWindow}?api_key=${API_KEY}&language=en-US&page=${page}`);
+  const data = await response.json();
+  return fetchMoviesWithDetails(data.results);
+};
+
 export const getTopRatedMovies = async (page: number = 1): Promise<Movie[]> => {
   const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=en-US&page=${page}`);
   const data = await response.json();
@@ -72,8 +78,8 @@ export const getUpcomingMovies = async (page: number = 1): Promise<Movie[]> => {
   return fetchMoviesWithDetails(data.results);
 };
 
-export const searchMovies = async (query: string): Promise<Movie[]> => {
-  const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=1`);
+export const searchMovies = async (query: string, page: number = 1): Promise<Movie[]> => {
+  const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=${page}`);
   const data = await response.json();
   return fetchMoviesWithDetails(data.results);
 };
@@ -93,6 +99,18 @@ export const getMovieCredits = async (movieId: number) => {
   const response = await fetch(`${BASE_URL}/movie/${movieId}/credits?api_key=${API_KEY}&language=en-US`);
   const data = await response.json();
   return data;
+};
+
+export const getMovieImages = async (movieId: number) => {
+  const response = await fetch(`${BASE_URL}/movie/${movieId}/images?api_key=${API_KEY}`);
+  const data = await response.json();
+  return data;
+};
+
+export const getMovieWatchProviders = async (movieId: number) => {
+  const response = await fetch(`${BASE_URL}/movie/${movieId}/watch/providers?api_key=${API_KEY}`);
+  const data = await response.json();
+  return data.results?.US || null; // Defaulting to US for now
 };
 
 export const getPersonDetails = async (personId: number) => {
