@@ -1,8 +1,10 @@
-import { Heart, X, Star } from 'lucide-react'
+import { Heart, X, Star, Bookmark } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext';
+import { useWatchlist } from '../context/WatchlistContext';
 import toast from 'react-hot-toast';
+import { useTheme } from '../context/ThemeContext';
 
 interface MovieProps {
   id: number;
@@ -16,9 +18,12 @@ interface MovieProps {
 const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
   const navigate = useNavigate();
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const { inWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
   const isMovieFavorite = isFavorite(id);
+  const isMovieInWatchlist = inWatchlist(id);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { themeClasses } = useTheme();
 
   // Detect mobile device
   useEffect(() => {
@@ -89,6 +94,55 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
     });
   };
 
+  const handleWatchlistClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isMovieInWatchlist) {
+      removeFromWatchlist(id);
+    } else {
+      addToWatchlist({ id, title, year, url, rating, genres });
+    }
+
+    toast.custom((t) => (
+      <div className={`${
+        t.visible ? 'animate-enter' : 'animate-leave'
+      } max-w-md bg-gradient-to-r from-amber-50 to-amber-100 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
+        <div className="flex-1 p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <img
+                className="h-16 w-12 rounded-md object-cover shadow-sm"
+                src={url}
+                alt={title}
+              />
+            </div>
+            <div className="ml-4 flex-1">
+              <p className="text-sm font-medium text-amber-900">
+                {title}
+              </p>
+              <p className="mt-1 text-sm text-amber-700">
+                {isMovieInWatchlist ? 'Removed from watchlist' : 'Added to watchlist'}
+              </p>
+            </div>
+            <div className="ml-4 flex-shrink-0 flex items-center">
+              <Bookmark className={`w-6 h-6 ${isMovieInWatchlist ? 'text-gray-400' : 'fill-blue-500 text-blue-500'}`} />
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={() => toast.dismiss(t.id)}
+          className="flex border border-transparent rounded-none rounded-r-lg p-4 items-center justify-center text-sm font-medium text-amber-600 hover:text-amber-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+          title="Dismiss notification"
+          aria-label="Dismiss notification"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+    ), {
+      duration: 3000,
+      position: 'bottom-right',
+    });
+  };
+
   // Close overlay when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -122,7 +176,7 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
       />
 
       {/* Overlay Gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-t from-amber-900/95 via-amber-900/50 to-transparent 
+      <div className={`absolute inset-0 bg-gradient-to-t ${themeClasses.bgGradient.replace('from-black', '')}/95 via-black/50 to-transparent
         transition-opacity duration-300
         ${isMobile 
           ? isOverlayVisible ? 'opacity-100' : 'opacity-0'
@@ -147,8 +201,8 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
           {/* Rating */}
           {rating && (
             <div className='flex items-center gap-1.5'>
-              <Star className='w-5 h-5 text-amber-400 fill-current' />
-              <span className='text-sm font-medium text-amber-400'>
+              <Star className={`w-5 h-5 ${themeClasses.textSecondary} fill-current`} />
+              <span className={`text-sm font-medium ${themeClasses.textSecondary}`}>
                 {rating.toFixed(1)}
               </span>
             </div>
@@ -165,7 +219,7 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
               {genres.slice(0, 2).map((genre, index) => (
                 <span
                   key={index}
-                  className='px-2.5 py-1 text-xs bg-amber-500/20 text-amber-300 rounded-full'
+                  className={`px-2.5 py-1 text-xs ${themeClasses.accent}/20 ${themeClasses.textSecondary} rounded-full`}
                 >
                   {genre}
                 </span>
@@ -175,12 +229,12 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
         </div>
 
         {/* Action Buttons */}
-        <div className='flex items-center justify-center gap-3 mt-4'>
+        <div className='flex items-center justify-center gap-2 mt-4'>
           <button 
-            className='movie-btn px-6 py-2.5 bg-amber-500 text-white rounded-full 
-              hover:bg-amber-600 active:bg-amber-700
-              transition-colors duration-300 shadow-lg flex items-center justify-center min-w-[100px]
-              focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2' 
+            className={`movie-btn px-4 py-2.5 ${themeClasses.accent} text-white rounded-full
+              ${themeClasses.accentHover}
+              transition-colors duration-300 shadow-lg flex items-center justify-center min-w-[80px]
+              focus:outline-none`}
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/movie/${id}`);
@@ -189,7 +243,24 @@ const MoviesCard = ({ id, title, year, url, rating, genres }: MovieProps) => {
             Watch
           </button>
           <button 
-            className={`fav-btn p-2.5 rounded-full transition-all duration-300 shadow-lg
+            className={`fav-btn p-2 rounded-full transition-all duration-300 shadow-lg
+              ${isMovieInWatchlist
+                ? 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700'
+                : 'bg-white hover:bg-gray-100 active:bg-gray-200'}
+              focus:outline-none focus:ring-2 focus:ring-offset-2
+              ${isMovieInWatchlist ? 'focus:ring-blue-500' : 'focus:ring-gray-500'}`}
+            onClick={handleWatchlistClick}
+            aria-label={isMovieInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
+          >
+            <Bookmark
+              className={`w-5 h-5 transition-colors duration-300
+                ${isMovieInWatchlist
+                  ? 'text-white fill-current'
+                  : 'text-blue-500'}`}
+            />
+          </button>
+          <button
+            className={`fav-btn p-2 rounded-full transition-all duration-300 shadow-lg
               ${isMovieFavorite 
                 ? 'bg-red-500 hover:bg-red-600 active:bg-red-700' 
                 : 'bg-white hover:bg-gray-100 active:bg-gray-200'}
